@@ -36,7 +36,6 @@ void preempt_enable(void)
                 return;
         }
 	sigset_t set;
-	sigset_t set;
         sigemptyset(&set);
         sigaddset(&set, SIGVTALRM);
         sigprocmask(SIG_UNBLOCK, &set, NULL);
@@ -45,7 +44,7 @@ void preempt_enable(void)
 void preempt_start(bool preempt)
 {
 	if (preempt == false) {
-		return false;
+		return;
 	}
 	preempt_action = true;
 	struct sigaction sa;
