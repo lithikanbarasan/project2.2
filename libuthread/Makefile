@@ -17,8 +17,8 @@ deps := $(patsubst %.o,%.d,$(objs))
 -include $(deps)
 
 $(lib): $(objs)
-	@echo "CC $@"
-	$(Q)$(CC) $(CFLAGS) -o $@ $^
+	@echo "AR $@"
+	$(Q)ar rcs $@ $^
 %.o: %.c
 	@echo "CC $@"
 	$(Q)$(CC) $(CFLAGS) -c -o $@ $<
@@ -27,4 +27,4 @@ clean:
 	@echo "clean"
 	$(Q)rm -f $(lib) $(objs) $(deps)
 
-## TODO: Phase 1
+
