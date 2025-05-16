@@ -55,7 +55,7 @@ int sem_up(sem_t sem)
 	}
 	struct uthread_tcb *next = NULL;
 	if (queue_dequeue(sem->queue_block, (void **)&next) == 0) {
-		uthread_unblock(next):
+		uthread_unblock(next);
 	}
 	else {
 		sem->count++;
