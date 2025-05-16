@@ -4,29 +4,28 @@
 
 #include "queue.h"
 
-struct queue {
-	node_t *head;
-	node_t *tail;
-	int length;
-};
-
 struct node {
-	void *data;
-	struct node *next;
+        void *data;
+        struct node *next;
 };
-
 typedef struct node node_t;
+
+struct queue {
+        node_t *head;
+        node_t *tail;
+        int length;
+};
 
 queue_t queue_create(void)
 {
-	queue_t queue_o = malloc(sizeof(struct queue));
-	if (queue_o == NULL) {
-		return NULL;
-	}
-	queue_o->head = NULL;
-	queue_o->tail = NULL;
-	queue_o->length = 0;
-	return queue_o;
+        queue_t queue_o = malloc(sizeof(struct queue));
+        if (queue_o == NULL) {
+                return NULL;
+        }
+        queue_o->head = NULL;
+        queue_o->tail = NULL;
+        queue_o->length = 0;
+        return queue_o;
 }
 
 int queue_destroy(queue_t queue)
@@ -88,7 +87,7 @@ int queue_delete(queue_t queue, void *data)
 				}
 			}
 			else {
-				prev->next = cur_node->next;
+				prev_node->next = curr_node->next;
 				if (curr_node == queue->tail) {
 					queue->tail = prev_node;
 				}			
@@ -104,7 +103,7 @@ int queue_delete(queue_t queue, void *data)
 
 int queue_iterate(queue_t queue, queue_func_t func)
 {
-	if queue == NULL || func == NULL) {
+	if (queue == NULL || func == NULL) {
 		return -1;
 	}
 	node_t *curr_node = queue->head;
