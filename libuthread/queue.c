@@ -69,6 +69,7 @@ int queue_dequeue(queue_t queue, void **data)
 	}
 	free(prev_head);
 	queue->length--;
+	return 0;
 }
 
 int queue_delete(queue_t queue, void *data)
@@ -79,11 +80,11 @@ int queue_delete(queue_t queue, void *data)
 	node_t *prev_node = NULL;
 	node_t *curr_node = queue->head;
 	while (curr_node != NULL) {
-		if (curr->data == data) {
+		if (curr_node->data == data) {
 			if (prev_node == NULL) {
 				queue->head = curr_node->next;
 				if (queue->head == NULL) {
-					queue->tail - NULL;
+					queue->tail =  NULL;
 				}
 			}
 			else {
@@ -98,7 +99,8 @@ int queue_delete(queue_t queue, void *data)
 		}
 		prev_node = curr_node;
 		curr_node = curr_node->next;
-	}	
+	}
+	return 0;
 }
 
 int queue_iterate(queue_t queue, queue_func_t func)
