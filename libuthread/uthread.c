@@ -20,13 +20,13 @@ static struct uthread_tcb *idle = NULL;
 static struct uthread_tcb *current = NULL;
 
 struct uthread_tcb {
+	uthread_ctx_t ctx;
 	void *stack;
 	int state;
 };
 
 struct uthread_tcb *uthread_current(void)
 {
-	/* TODO Phase 2/3 */
 	return current;
 }
 
@@ -52,7 +52,7 @@ void uthread_exit(void)
 {
 	current->state = EXCITESTATE;
 	if (current->stack != NULL) {
-		uthread_ctx_destroy_stack(current->stack, STACKSIZE);
+		uthread_ctx_destroy_stack(current->stack);
 	}
 	free(current);
 	uthread_yield();
@@ -64,19 +64,19 @@ int uthread_create(uthread_func_t func, void *arg)
 	if (tcb == NULL) {
 		return -1;
 	}
-	tcb->stack = uthread_ctx_alloc_stack(STACKSIZE);
-	if (!tcb->stack) {
+	tcb->stack = uthread_ctx_alloc_stack();
+	if (tcb->stack == NULL)  {
 		free(tcb);
 		return -1;
 	}
-	if (uthread_ctx_init(&tcb->ctx, tcb->stack, STACKSIZE, func, arg) < 0) {
-		uthread_ctx_destroy_stack(tcb->stack, STACKSIZE);
+	if (uthread_ctx_init(&tcb->ctx, tcb->stack, func, arg) < 0) {
+		uthread_ctx_destroy_stack(tcb->stack);
 		free(tcb);
 		return -1;
 	}
 	tcb->state = READYSTATE;
 	if (queue_enqueue(queue_ready, tcb) < 0) {
-		uthread_ctx_destroy_stack(tcb->stack, STACKSIZE);
+		uthread_ctx_destroy_stack(tcb->stack);
 		free(tcb);
 		return -1;
 	}
@@ -99,7 +99,7 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 	idle->stack = NULL;
 	idle->state = RUNSTATE;
 	current = idle;
-	if (uthread_create(func, arg) == -1) {
+	if (uthread_create(func, arg) < 0) {
 		return -1;
 	}
 	while (queue_length(queue_ready) > 0) {
@@ -117,11 +117,16 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 
 void uthread_block(void)
 {
-	/* TODO Phase 3 */
+	current->state = EXCITESTATE;
+	uthread_yield();
 }
 
 void uthread_unblock(struct uthread_tcb *uthread)
 {
-	/* TODO Phase 3 */
+	if (uthread == NULL) {
+		return;
+	}
+	uthread->state = READYSTATE;
+	queue_enqueue(queue_ready, uthread);
 }
 
