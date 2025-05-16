@@ -13,6 +13,7 @@
 #define RUNSTATE 0
 #define READYSTATE 1
 #define EXCITESTATE 2
+#define BLOCKEDSTATE 3
 #define STACKSIZE 100000
 
 static queue_t queue_ready = NULL;
@@ -122,7 +123,7 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 
 void uthread_block(void)
 {
-	current->state = EXCITESTATE;
+	current->state = BLOCKEDSTATE;
 	uthread_yield();
 }
 
