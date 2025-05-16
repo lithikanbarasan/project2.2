@@ -99,12 +99,17 @@ int uthread_run(bool preempt, uthread_func_t func, void *arg)
 	idle->stack = NULL;
 	idle->state = RUNSTATE;
 	current = idle;
+
+	preempt_start(preempt);
 	if (uthread_create(func, arg) < 0) {
 		return -1;
 	}
 	while (queue_length(queue_ready) > 0) {
 		uthread_yield();
 	}
+
+	preempt_stop(); 
+
 	free(idle);
 	queue_destroy(queue_ready);
 	// idle = NULL;
@@ -120,6 +125,7 @@ void uthread_block(void)
 	current->state = EXCITESTATE;
 	uthread_yield();
 }
+
 
 void uthread_unblock(struct uthread_tcb *uthread)
 {
